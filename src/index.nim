@@ -66,34 +66,4 @@ proc createDom(): VNode =
     createBoard()
     createController()
 
-# proc onkeydown(ev: Event) =
-#   echo "wa"
-#   board[2][2] = 100
-      # let ev = KeyboardEvent(ev)
-      # case ev.key
-      # of "ArrowLeft":
-      #   echo("left")
-      #   for y, row in board:
-      #     for x, value in row:
-      #       if x == 0: continue
-      #       echo("loop")
-      #       echo(board[y][x-1])
-      #       echo(value)
-      #       if board[y][x-1] == 0:
-      #         echo "a"
-      #         board[y][x] = 0
-      #         board[y][x-1] = value
-      #       elif board[y][x-1] == value:
-      #         echo "b"
-      #         board[y][x] = 0
-      #         board[y][x-1] = value * 2
-      #   echo board
-      # of "ArrowDown":
-      #   echo("down")
-      #   board[2][2] = 100
-      # of "ArrowUp":
-      #   echo("up")
-      # of "ArrowRight":
-      #   echo("right")
-
 setRenderer(createDom)
