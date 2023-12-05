@@ -4,11 +4,12 @@
             "patterns": [
                 "src"
             ],
-            "extensions": "nim"
+            "extensions": "nim,css"
         }
     },
     "scripts": {
         "build": "tailwind build -i ./src/app.css -o ./public/index.css && nimble build",
+        "build:release": "tailwind build -i ./src/app.css -o ./public/index.css --minify && nimble build -d:release",
         "watch": "npm-watch"
     },
     "devDependencies": {

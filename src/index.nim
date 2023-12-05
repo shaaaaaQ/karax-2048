@@ -117,23 +117,38 @@ proc move(dir: Direction) =
     addTile()
 
 proc renderTile(value: int): VNode =
-  result = buildHtml(tdiv(class="w-[100px] h-[100px] text-center font-bold text-[30px] leading-[100px] bg-sky-200")):
-    if value != 0:
-      text($value)
+  result = buildHtml(tdiv(class="text-center font-bold text-[30px] leading-[100px] bg-sky-300")):
+    text($value)
+
+proc renderCell(): VNode =
+  result = buildHtml(tdiv(class="w-[100px] h-[100px] bg-gray-500"))
 
 proc renderBoard(): VNode =
-  result = buildHtml(tdiv(class="w-fit grid grid-cols-4 gap-2")):
+  result = buildHtml(tdiv(class="w-fit grid grid-cols-4 gap-2 mx-auto my-10")):
     for row in board:
       for value in row:
-        renderTile(value)
+        renderCell():
+          if value != 0:
+            renderTile(value)
 
 proc createDom(): VNode =
   result = buildHtml(tdiv):
-    button():
-      text("New")
-      proc onclick() =
-        init()
     renderBoard()
+    tdiv(class="w-fit mx-auto [&>a]:text-blue-700"):
+      button(class="p-2 bg-sky-200 rounded-md"):
+        text("New")
+        proc onclick() =
+          init()
+      br()
+      text("未完成")
+      br()
+      text("キーボードの矢印キーで動かせる")
+      br()
+      a(href="https://github.com/karaxnim/karax"):
+        text("Karax")
+      br()
+      a(href="https://github.com/shaaaaaQ/karax-2048"):
+        text("GitHub")
 
 proc onkeydown(ev: dom.Event) =
   let ev = KeyboardEvent(ev)
