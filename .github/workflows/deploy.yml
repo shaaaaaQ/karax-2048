@@ -1,0 +1,51 @@
+name: Deploy to GitHub Pages
+
+on:
+    push:
+        branches: main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Install Nim
+                uses: jiro4989/setup-nim-action@v1
+                with:
+                    nim-version: 2.0.0
+
+            -   name: Install Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: 21
+                    cache: npm
+
+            -   name: Install dependencies
+                run: npm install
+
+            -   name: Build
+                run: npm run build:release
+
+            -   name: Upload Pages Artifacts
+                uses: actions/upload-pages-artifact@v2
+                with:
+                    path: public/
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+
+        permissions:
+            pages: write
+            id-token: write
+        
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        
+        steps:
+            -   name: Deploy
+                id: deployment
+                uses: actions/deploy-pages@v2
