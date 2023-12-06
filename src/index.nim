@@ -47,7 +47,7 @@ proc init() =
 
 proc move(dir: Direction) =
   let tmp = board
-  # ここ短かくしたい
+  var lock: seq[seq[int]]
   case dir
   of Direction.Left:
     for y in countup(0, 3):
@@ -62,9 +62,11 @@ proc move(dir: Direction) =
             board[y][nx+1] = 0
             board[y][nx] = value
           elif board[y][nx] == value:
-            board[y][nx+1] = 0
-            board[y][nx] = value * 2
-            score += value * 2
+            if lock.contains(@[nx, y]) == false:
+              board[y][nx+1] = 0
+              board[y][nx] = value * 2
+              lock.add(@[nx, y])
+              score += value * 2
           else:
             break
   of Direction.Down:
@@ -80,9 +82,11 @@ proc move(dir: Direction) =
             board[ny-1][x] = 0
             board[ny][x] = value
           elif board[ny][x] == value:
-            board[ny-1][x] = 0
-            board[ny][x] = value * 2
-            score += value * 2
+            if lock.contains(@[x, ny]) == false:
+              board[ny-1][x] = 0
+              board[ny][x] = value * 2
+              lock.add(@[x, ny])
+              score += value * 2
           else:
             break
   of Direction.Up:
@@ -98,9 +102,11 @@ proc move(dir: Direction) =
             board[ny+1][x] = 0
             board[ny][x] = value
           elif board[ny][x] == value:
-            board[ny+1][x] = 0
-            board[ny][x] = value * 2
-            score += value * 2
+            if lock.contains(@[x, ny]) == false:
+              board[ny+1][x] = 0
+              board[ny][x] = value * 2
+              lock.add(@[x, ny])
+              score += value * 2
           else:
             break
   of Direction.Right:
@@ -116,9 +122,11 @@ proc move(dir: Direction) =
             board[y][nx-1] = 0
             board[y][nx] = value
           elif board[y][nx] == value:
-            board[y][nx-1] = 0
-            board[y][nx] = value * 2
-            score += value * 2
+            if lock.contains(@[nx, y]) == false:
+              board[y][nx-1] = 0
+              board[y][nx] = value * 2
+              lock.add(@[nx, y])
+              score += value * 2
           else:
             break
   if tmp != board:
