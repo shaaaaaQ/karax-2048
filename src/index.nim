@@ -155,7 +155,7 @@ proc createDom(): VNode =
       renderScore()
       renderNewButton()
     renderBoard()
-    tdiv(class="[&>a]:text-blue-700 select-all"):
+    tdiv(class="[&>a]:text-blue-700 select-text"):
       text("未完成")
       br()
       text("キーボードの矢印キーで動かせる")
