@@ -1,4 +1,5 @@
 import std/random
+import std/tables
 include karax / prelude
 import karax / kdom
 
@@ -149,12 +150,12 @@ proc renderNewButton(): VNode =
       init()
 
 proc createDom(): VNode =
-  result = buildHtml(tdiv(class="w-fit mx-auto my-10")):
+  result = buildHtml(tdiv(class="w-fit mx-auto my-10 select-none")):
     tdiv(class="flex gap-3"):
       renderScore()
       renderNewButton()
     renderBoard()
-    tdiv(class="[&>a]:text-blue-700"):
+    tdiv(class="[&>a]:text-blue-700 select-all"):
       text("未完成")
       br()
       text("キーボードの矢印キーで動かせる")
@@ -178,7 +179,33 @@ proc onkeydown(ev: dom.Event) =
     move(Right)
   redraw(kxi)
 
+var dragStartPos = toTable({"x": 0, "y": 0})
+
+proc onmousedown(ev: dom.Event) =
+  let ev = MouseEvent(ev)
+  dragStartPos["x"] = ev.pageX
+  dragStartPos["y"] = ev.pageY
+
+proc onmouseup(ev: dom.Event) =
+  let ev = MouseEvent(ev)
+  let distanceX = abs(dragStartPos["x"] - ev.pageX)
+  let distanceY = abs(dragStartPos["y"] - ev.pageY)
+  if distanceX > 50 or distanceY > 50:
+    if distanceX > distanceY:
+      if dragStartPos["x"] > ev.pageX:
+        move(Left)
+      else:
+        move(Right)
+    else:
+      if dragStartPos["y"] > ev.pageY:
+        move(Up)
+      else:
+        move(Down)
+    redraw(kxi)
+
 window.addEventListener("keydown", onkeydown)
+window.addEventListener("mousedown", onmousedown)
+window.addEventListener("mouseup", onmouseup)
 
 init()
 
