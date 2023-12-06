@@ -8,7 +8,9 @@ type Direction = enum
   Up
   Right
 
-var board: seq[seq[int]]
+var
+  board: seq[seq[int]]
+  score = 0
 
 proc countEmptyTile(): int =
   result = 0
@@ -44,6 +46,7 @@ proc init() =
 
 proc move(dir: Direction) =
   let tmp = board
+  # ここ短かくしたい
   case dir
   of Direction.Left:
     for y in countup(0, 3):
@@ -60,6 +63,7 @@ proc move(dir: Direction) =
           elif board[y][nx] == value:
             board[y][nx+1] = 0
             board[y][nx] = value * 2
+            score += value * 2
           else:
             break
   of Direction.Down:
@@ -77,6 +81,7 @@ proc move(dir: Direction) =
           elif board[ny][x] == value:
             board[ny-1][x] = 0
             board[ny][x] = value * 2
+            score += value * 2
           else:
             break
   of Direction.Up:
@@ -94,6 +99,7 @@ proc move(dir: Direction) =
           elif board[ny][x] == value:
             board[ny+1][x] = 0
             board[ny][x] = value * 2
+            score += value * 2
           else:
             break
   of Direction.Right:
@@ -111,6 +117,7 @@ proc move(dir: Direction) =
           elif board[y][nx] == value:
             board[y][nx-1] = 0
             board[y][nx] = value * 2
+            score += value * 2
           else:
             break
   if tmp != board:
@@ -124,22 +131,30 @@ proc renderCell(): VNode =
   result = buildHtml(tdiv(class="w-[100px] h-[100px] bg-gray-500"))
 
 proc renderBoard(): VNode =
-  result = buildHtml(tdiv(class="w-fit grid grid-cols-4 gap-2 mx-auto my-10")):
+  result = buildHtml(tdiv(class="grid grid-cols-4 gap-2 my-10")):
     for row in board:
       for value in row:
         renderCell():
           if value != 0:
             renderTile(value)
 
+proc renderScore(): VNode =
+  result = buildHtml(tdiv(class="w-full p-3 bg-sky-700 text-sky-100 rounded-md text-end")):
+    text($score)
+
+proc renderNewButton(): VNode =
+  result = buildHtml(button(class="p-3 bg-sky-700 text-sky-100 rounded-md")):
+    text("New")
+    proc onclick() =
+      init()
+
 proc createDom(): VNode =
-  result = buildHtml(tdiv):
+  result = buildHtml(tdiv(class="w-fit mx-auto my-10")):
+    tdiv(class="flex gap-3"):
+      renderScore()
+      renderNewButton()
     renderBoard()
-    tdiv(class="w-fit mx-auto [&>a]:text-blue-700"):
-      button(class="p-2 bg-sky-200 rounded-md"):
-        text("New")
-        proc onclick() =
-          init()
-      br()
+    tdiv(class="[&>a]:text-blue-700"):
       text("未完成")
       br()
       text("キーボードの矢印キーで動かせる")
