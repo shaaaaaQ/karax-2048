@@ -1,5 +1,4 @@
-import std/random
-import std/tables
+import std/random, std/tables, std/strformat
 include karax / prelude
 import karax / kdom
 
@@ -48,6 +47,7 @@ proc init() =
 proc move(dir: Direction) =
   let tmp = board
   var lock: seq[seq[int]]
+  # ここ短かくする
   case dir
   of Direction.Left:
     for y in countup(0, 3):
@@ -133,7 +133,7 @@ proc move(dir: Direction) =
     addTile()
 
 proc renderTile(value: int): VNode =
-  result = buildHtml(tdiv(class="text-center font-bold text-[30px] leading-[100px] bg-sky-300")):
+  result = buildHtml(tdiv(class=fmt("text-center font-bold text-[30px] leading-[100px] bg-[darkslategray] text-[whitesmoke] tile-{value}"))):
     text($value)
 
 proc renderCell(): VNode =

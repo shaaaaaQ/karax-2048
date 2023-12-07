@@ -5,3 +5,47 @@
 html {
     @apply bg-gray-300
 }
+
+.tile-2 {
+    @apply text-[darkslategray] bg-[antiquewhite];
+}
+
+.tile-4 {
+    @apply text-[darkslategray] bg-[wheat];
+}
+
+.tile-8 {
+    @apply text-[whitesmoke] bg-[orange];
+}
+
+.tile-16 {
+    @apply text-[whitesmoke] bg-[darkorange];
+}
+
+.tile-32 {
+    @apply text-[whitesmoke] bg-[orangered];
+}
+
+.tile-64 {
+    @apply text-[whitesmoke] bg-[red];
+}
+
+.tile-128 {
+    @apply text-[whitesmoke] bg-[gold];
+}
+
+.tile-256 {
+    @apply text-[whitesmoke] bg-[gold];
+}
+
+.tile-512 {
+    @apply text-[whitesmoke] bg-[gold];
+}
+
+.tile-1024 {
+    @apply text-[whitesmoke] bg-[gold];
+}
+
+.tile-2048 {
+    @apply text-[whitesmoke] bg-[gold];
+}
