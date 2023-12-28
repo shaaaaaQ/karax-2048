@@ -177,13 +177,13 @@ proc createDom(): VNode =
 proc onkeydown(ev: dom.Event) =
   let ev = KeyboardEvent(ev)
   case ev.key
-  of "ArrowLeft":
+  of "h", "ArrowLeft", "a":
     move(Left)
-  of "ArrowDown":
+  of "j", "ArrowDown", "s":
     move(Down)
-  of "ArrowUp":
+  of "k", "ArrowUp", "w":
     move(Up)
-  of "ArrowRight":
+  of "l", "ArrowRight", "d":
     move(Right)
   redraw(kxi)
 
