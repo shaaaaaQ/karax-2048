@@ -13,6 +13,14 @@ var
   board: seq[seq[int]]
   score = 0
 
+proc getDirection(dir: Direction): tuple[x: int, y: int] =
+  case dir
+  of Left: result = (x: -1, y: 0)
+  of Down: result = (x: 0, y: 1)
+  of Up: result = (x: 0, y: -1)
+  of Right: result = (x: 1, y: 0)
+
+
 proc countEmptyTile(): int =
   result = 0
   for row in board:
@@ -48,87 +56,35 @@ proc init() =
 proc move(dir: Direction) =
   let tmp = board
   var lock: seq[seq[int]]
-  case dir
-  of Direction.Left:
-    for y in countup(0, 3):
-      for x in countup(0, 3):
-        let value = board[y][x]
-        if value == 0: continue
-        var nx = x
-        while true:
-          dec(nx)
-          if nx < 0: break
-          elif board[y][nx] == 0:
-            board[y][nx+1] = 0
-            board[y][nx] = value
-          elif board[y][nx] == value:
-            if lock.contains(@[nx, y]) == false:
-              board[y][nx+1] = 0
-              board[y][nx] = value * 2
-              lock.add(@[nx, y])
-              score += value * 2
-          else:
-            break
-  of Direction.Down:
-    for y in countdown(3, 0):
-      for x in countup(0, 3):
-        let value = board[y][x]
-        if value == 0: continue
-        var ny = y
-        while true:
-          inc(ny)
-          if ny > 3: break
-          elif board[ny][x] == 0:
-            board[ny-1][x] = 0
-            board[ny][x] = value
-          elif board[ny][x] == value:
-            if lock.contains(@[x, ny]) == false:
-              board[ny-1][x] = 0
-              board[ny][x] = value * 2
-              lock.add(@[x, ny])
-              score += value * 2
-          else:
-            break
-  of Direction.Up:
-    for y in countup(0, 3):
-      for x in countup(0, 3):
-        let value = board[y][x]
-        if value == 0: continue
-        var ny = y
-        while true:
-          dec(ny)
-          if ny < 0: break
-          elif board[ny][x] == 0:
-            board[ny+1][x] = 0
-            board[ny][x] = value
-          elif board[ny][x] == value:
-            if lock.contains(@[x, ny]) == false:
-              board[ny+1][x] = 0
-              board[ny][x] = value * 2
-              lock.add(@[x, ny])
-              score += value * 2
-          else:
-            break
-  of Direction.Right:
-    for y in countup(0, 3):
-      for x in countdown(3, 0):
-        let value = board[y][x]
-        if value == 0: continue
-        var nx = x
-        while true:
-          inc(nx)
-          if nx > 3: break
-          elif board[y][nx] == 0:
-            board[y][nx-1] = 0
-            board[y][nx] = value
-          elif board[y][nx] == value:
-            if lock.contains(@[nx, y]) == false:
-              board[y][nx-1] = 0
-              board[y][nx] = value * 2
-              lock.add(@[nx, y])
-              score += value * 2
-          else:
-            break
+
+  let (dirX, dirY) = getDirection(dir)
+
+  for y in (if dirY < 0: [0, 1, 2, 3] else: [3, 2, 1, 0]):
+    for x in (if dirX < 0: [3, 2, 1, 0] else: [0, 1, 2, 3]):
+      let value = board[y][x]
+      if value == 0: continue
+
+      var nx = x
+      var ny = y
+
+      while true:
+        nx += dirX
+        ny += dirY
+
+        if nx < 0 or nx > 3 or ny < 0 or ny > 3: break
+
+        if board[ny][nx] == 0:
+          board[ny][nx] = value
+          board[ny-dirY][nx-dirX] = 0
+        elif board[ny][nx] == value:
+          if lock.contains(@[nx, ny]) == false:
+            board[ny-dirY][nx-dirX] = 0
+            board[ny][nx] = value * 2
+            lock.add(@[nx, ny])
+            score += value * 2
+        else:
+          break
+
   if tmp != board:
     addTile()
 
