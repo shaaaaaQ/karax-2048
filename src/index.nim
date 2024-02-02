@@ -1,5 +1,4 @@
-import std/random
-import std/tables
+import std/random, std/tables, std/strformat
 include karax / prelude
 import karax / kdom
 
@@ -89,7 +88,7 @@ proc move(dir: Direction) =
     addTile()
 
 proc renderTile(value: int): VNode =
-  result = buildHtml(tdiv(class="text-center font-bold text-[30px] leading-[100px] bg-sky-300")):
+  result = buildHtml(tdiv(class=fmt("text-center font-bold text-[30px] leading-[100px] bg-[darkslategray] text-[whitesmoke] tile-{value}"))):
     text($value)
 
 proc renderCell(): VNode =
@@ -133,13 +132,13 @@ proc createDom(): VNode =
 proc onkeydown(ev: dom.Event) =
   let ev = KeyboardEvent(ev)
   case ev.key
-  of "ArrowLeft":
+  of "h", "ArrowLeft", "a":
     move(Left)
-  of "ArrowDown":
+  of "j", "ArrowDown", "s":
     move(Down)
-  of "ArrowUp":
+  of "k", "ArrowUp", "w":
     move(Up)
-  of "ArrowRight":
+  of "l", "ArrowRight", "d":
     move(Right)
   redraw(kxi)
 

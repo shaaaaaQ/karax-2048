@@ -8,7 +8,7 @@
         }
     },
     "scripts": {
-        "build": "tailwind build -i ./src/app.css -o ./public/index.css && nimble build",
+        "build": "tailwind build -i ./src/app.css -o ./public/index.css && nimble build -Y",
         "build:release": "tailwind build -i ./src/app.css -o ./public/index.css --minify && nimble build -Y -d:release",
         "watch": "npm-watch"
     },
