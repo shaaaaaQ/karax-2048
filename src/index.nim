@@ -59,7 +59,7 @@ proc move(dir: Direction) =
   let (dirX, dirY) = getDirection(dir)
 
   for y in (if dirY < 0: [0, 1, 2, 3] else: [3, 2, 1, 0]):
-    for x in (if dirX < 0: [3, 2, 1, 0] else: [0, 1, 2, 3]):
+    for x in (if dirX < 0: [0, 1, 2, 3] else: [3, 2, 1, 0]):
       let value = board[y][x]
       if value == 0: continue
 
