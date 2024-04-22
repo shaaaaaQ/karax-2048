@@ -53,7 +53,7 @@ proc init() =
   addTile()
 
 proc move(dir: Direction) =
-  let tmp = board
+  var moved = false
   var lock: seq[seq[int]]
 
   let (dirX, dirY) = getDirection(dir)
@@ -75,16 +75,18 @@ proc move(dir: Direction) =
         if board[ny][nx] == 0:
           board[ny][nx] = value
           board[ny-dirY][nx-dirX] = 0
+          moved = true
         elif board[ny][nx] == value:
           if lock.contains(@[nx, ny]) == false:
             board[ny-dirY][nx-dirX] = 0
             board[ny][nx] = value * 2
             lock.add(@[nx, ny])
             score += value * 2
+            moved = true
         else:
           break
 
-  if tmp != board:
+  if moved:
     addTile()
 
 proc renderTile(value: int): VNode =
