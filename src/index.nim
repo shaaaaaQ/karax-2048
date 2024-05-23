@@ -1,6 +1,8 @@
 import std/random, std/tables, std/strformat
 include karax / prelude
 import karax / kdom
+import karax / localstorage
+import jsony
 
 type Direction = enum
   Left
@@ -11,6 +13,10 @@ type Direction = enum
 var
   board: seq[seq[int]]
   score = 0
+
+proc store() =
+  setItem("k2048::board", board.toJson().cstring)
+  setItem("k2048::score", ($score).cstring)
 
 proc getDirection(dir: Direction): tuple[x: int, y: int] =
   case dir
@@ -43,7 +49,8 @@ proc addTile() =
             else:
               board[y][x] = 2
 
-proc init() =
+proc newBoard() =
+  score = 0
   board = @[
     @[0, 0, 0, 0],
     @[0, 0, 0, 0],
@@ -51,6 +58,16 @@ proc init() =
     @[0, 0, 0, 0]
   ]
   addTile()
+  store()
+
+proc init() =
+  if hasItem("k2048::board"):
+    board = ($getItem("k2048::board")).fromJson(seq[seq[int]])
+  else:
+    newBoard()
+
+  if hasItem("k2048::score"):
+    score = getItem("k2048::score").parseInt
 
 proc move(dir: Direction) =
   var moved = false
@@ -112,7 +129,7 @@ proc renderNewButton(): VNode =
   result = buildHtml(button(class="p-3 bg-sky-700 text-sky-100 rounded-md")):
     text("New")
     proc onclick() =
-      init()
+      newBoard()
 
 proc createDom(): VNode =
   result = buildHtml(tdiv(class="w-fit mx-auto my-10 select-none")):
@@ -121,8 +138,6 @@ proc createDom(): VNode =
       renderNewButton()
     renderBoard()
     tdiv(class="[&>a]:text-blue-700 select-text"):
-      text("未完成")
-      br()
       text("キーボードの矢印キーで動かせる")
       br()
       a(href="https://github.com/karaxnim/karax"):
@@ -143,6 +158,7 @@ proc onkeydown(ev: dom.Event) =
   of "l", "ArrowRight", "d":
     move(Right)
   redraw(kxi)
+  store()
 
 var dragStartPos = toTable({"x": 0, "y": 0})
 
@@ -167,6 +183,7 @@ proc onmouseup(ev: dom.Event) =
       else:
         move(Down)
     redraw(kxi)
+    store()
 
 window.addEventListener("keydown", onkeydown)
 window.addEventListener("mousedown", onmousedown)
