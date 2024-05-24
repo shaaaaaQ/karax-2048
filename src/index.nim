@@ -106,6 +106,8 @@ proc move(dir: Direction) =
   if moved:
     addTile()
 
+  store()
+
 proc renderTile(value: int): VNode =
   result = buildHtml(tdiv(class=fmt("text-center font-bold text-[30px] leading-[100px] bg-[darkslategray] text-[whitesmoke] tile-{value}"))):
     text($value)
@@ -158,7 +160,6 @@ proc onkeydown(ev: dom.Event) =
   of "l", "ArrowRight", "d":
     move(Right)
   redraw(kxi)
-  store()
 
 var dragStartPos = toTable({"x": 0, "y": 0})
 
@@ -183,7 +184,6 @@ proc onmouseup(ev: dom.Event) =
       else:
         move(Down)
     redraw(kxi)
-    store()
 
 window.addEventListener("keydown", onkeydown)
 window.addEventListener("mousedown", onmousedown)
