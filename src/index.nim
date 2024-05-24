@@ -10,9 +10,12 @@ type Direction = enum
   Up
   Right
 
+type Board = seq[seq[int]]
+
 var
-  board: seq[seq[int]]
-  score = 0
+  board: Board
+  score: int
+  isGameOver: bool
 
 proc store() =
   setItem("k2048::board", board.toJson().cstring)
@@ -26,15 +29,30 @@ proc getDirection(dir: Direction): tuple[x: int, y: int] =
   of Right: result = (x: 1, y: 0)
 
 
-proc countEmptyTile(): int =
+proc canMove(board: Board): bool =
+  result = false
+  for y, row in board:
+    for x, value in row:
+      if value == 0:
+        # 空
+        result = true
+      if x < 3 and board[y][x+1] == value:
+        # 右
+        result = true
+      if y < 3 and board[y+1][x] == value:
+        # 下
+        result = true
+
+
+proc countEmptyTile(board: Board): int =
   result = 0
   for row in board:
     for value in row:
       if value == 0:
         inc(result)
 
-proc addTile() =
-  let emptyTileNum = countEmptyTile()
+proc addTile(board: var Board) =
+  let emptyTileNum = board.countEmptyTile()
   if emptyTileNum != 0:
     randomize()
     let index = rand(1..emptyTileNum)
@@ -51,25 +69,17 @@ proc addTile() =
 
 proc newBoard() =
   score = 0
+  isGameOver = false
   board = @[
     @[0, 0, 0, 0],
     @[0, 0, 0, 0],
     @[0, 0, 0, 0],
     @[0, 0, 0, 0]
   ]
-  addTile()
+  board.addTile()
   store()
 
-proc init() =
-  if hasItem("k2048::board"):
-    board = ($getItem("k2048::board")).fromJson(seq[seq[int]])
-  else:
-    newBoard()
-
-  if hasItem("k2048::score"):
-    score = getItem("k2048::score").parseInt
-
-proc move(dir: Direction) =
+proc move(board: var Board, dir: Direction) =
   var moved = false
   var lock: seq[seq[int]]
 
@@ -104,7 +114,9 @@ proc move(dir: Direction) =
           break
 
   if moved:
-    addTile()
+    board.addTile()
+
+  isGameOver = not board.canMove()
 
   store()
 
@@ -116,19 +128,25 @@ proc renderCell(): VNode =
   result = buildHtml(tdiv(class="w-[100px] h-[100px] bg-gray-500"))
 
 proc renderBoard(): VNode =
-  result = buildHtml(tdiv(class="grid grid-cols-4 gap-2 my-10")):
-    for row in board:
-      for value in row:
-        renderCell():
-          if value != 0:
-            renderTile(value)
+  result = buildHtml(tdiv(class="w-fit h-fit my-10 relative")):
+    tdiv(class="grid grid-cols-4 gap-2"):
+      for row in board:
+        for value in row:
+          renderCell():
+            if value != 0:
+              renderTile(value)
+
+    if isGameOver:
+      tdiv(class="bg-gray-400/70 w-full h-full absolute top-0 left-0 flex animate-fade-in"):
+        tdiv(class="font-bold text-6xl m-auto"):
+          text("GameOver")
 
 proc renderScore(): VNode =
   result = buildHtml(tdiv(class="w-full p-3 bg-sky-700 text-sky-100 rounded-md text-end")):
     text($score)
 
 proc renderNewButton(): VNode =
-  result = buildHtml(button(class="p-3 bg-sky-700 text-sky-100 rounded-md")):
+  result = buildHtml(button(class="p-3 bg-sky-700 text-sky-100 rounded-md hover:bg-sky-600 transition-colors")):
     text("New")
     proc onclick() =
       newBoard()
@@ -152,13 +170,13 @@ proc onkeydown(ev: dom.Event) =
   let ev = KeyboardEvent(ev)
   case ev.key
   of "h", "ArrowLeft", "a":
-    move(Left)
+    board.move(Left)
   of "j", "ArrowDown", "s":
-    move(Down)
+    board.move(Down)
   of "k", "ArrowUp", "w":
-    move(Up)
+    board.move(Up)
   of "l", "ArrowRight", "d":
-    move(Right)
+    board.move(Right)
   redraw(kxi)
 
 var dragStartPos = toTable({"x": 0, "y": 0})
@@ -175,19 +193,32 @@ proc onmouseup(ev: dom.Event) =
   if distanceX > 50 or distanceY > 50:
     if distanceX > distanceY:
       if dragStartPos["x"] > ev.pageX:
-        move(Left)
+        board.move(Left)
       else:
-        move(Right)
+        board.move(Right)
     else:
       if dragStartPos["y"] > ev.pageY:
-        move(Up)
+        board.move(Up)
       else:
-        move(Down)
+        board.move(Down)
     redraw(kxi)
 
 window.addEventListener("keydown", onkeydown)
 window.addEventListener("mousedown", onmousedown)
 window.addEventListener("mouseup", onmouseup)
+
+proc init() =
+  if hasItem("k2048::board"):
+    board = ($getItem("k2048::board")).fromJson(Board)
+  else:
+    newBoard()
+
+  if hasItem("k2048::score"):
+    score = getItem("k2048::score").parseInt
+  else:
+    score = 0
+
+  isGameOver = not board.canMove()
 
 init()
 
