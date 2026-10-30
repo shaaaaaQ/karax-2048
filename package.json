@@ -1,21 +1,17 @@
 {
-    "watch": {
-        "build": {
-            "patterns": [
-                "src"
-            ],
-            "extensions": "nim,css"
-        }
+    "private": true,
+    "packageManager": "pnpm@12.16.1",
+    "engines": {
+        "node": ">=22"
     },
     "scripts": {
-        "build": "tailwind build -i ./src/app.css -o ./public/index.css && nimble build -Y",
-        "build:release": "tailwind build -i ./src/app.css -o ./public/index.css --minify && nimble build -Y -d:release",
-        "watch": "npm-watch"
+        "build": "tailwindcss -i ./src/app.css -o ./public/index.css && nimble build -Y",
+        "build:release": "tailwindcss -i ./src/app.css -o ./public/index.css --minify && nimble build -Y -d:release",
+        "watch": "nodemon --watch src --ext nim,css --exec \"pnpm build\""
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.16",
-        "npm-watch": "^0.11.0",
-        "postcss": "^8.4.32",
-        "tailwindcss": "^3.3.5"
+        "@tailwindcss/cli": "^4.3.3",
+        "nodemon": "^3.1.14",
+        "tailwindcss": "^4.3.3"
     }
 }

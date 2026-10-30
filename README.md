@@ -5,12 +5,17 @@ todo
 - クリア判定
 - アニメーション
 
+### Setup
+```bash
+pnpm install --frozen-lockfile
+```
+
 ### Develop
 ```bash
-npm run watch
+pnpm watch
 ```
 
 ### Build
 ```bash
-npm run build:release
+pnpm build:release
 ```

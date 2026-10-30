@@ -1,9 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss" source(none);
+@source "./**/*.nim";
+
+@theme {
+    --animate-fade-in: fade-in 2s;
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
 
 html {
-    @apply bg-gray-300
+    @apply bg-gray-300;
 }
 
 .tile-2 {
